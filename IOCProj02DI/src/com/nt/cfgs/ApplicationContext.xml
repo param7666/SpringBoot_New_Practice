@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="os" class="com.nt.sbeans.OrderService">
+    <property name="bill" value="1500.0" />
+    <property name="discount" ref="dc" />
+    </bean>
+
+	<bean id="dc" class="com.nt.sbeans.DiscountCalculator">
+	<property name="discountRate" value="100.0" />
+	</bean>
+</beans>
