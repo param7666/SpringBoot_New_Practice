@@ -16,6 +16,9 @@ public interface DoctorRepo extends JpaRepository<Doctor, Long>{
 	
 	@Query("from Doctor where income>=:income")
 	public List<Doctor> findDoctorByIncome(Double income);
+	
+	@Query("from Doctor where income between ?1 and ?2")
+	public List<Object[]> findDoctorBetweenSalary(Double start, Double end) throws Exception;
 
 }
 
