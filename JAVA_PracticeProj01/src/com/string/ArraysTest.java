@@ -165,7 +165,7 @@ public class ArraysTest {
 	}
 	
 	public static void moveNegetive() {
-		int arr[]= {1,-1,2,-2,1,3,-3,7};
+		int arr[]= {1,-1,2,-2,1,3,-3,7}; 
 		List<Integer> negetive=new ArrayList<Integer>();
 		List<Integer> positive=new ArrayList<Integer>();
 		
@@ -196,6 +196,24 @@ public class ArraysTest {
 	}
 	
 	
+	
+	public static void rotate() {
+		int arr[]= {1,-1,2,-2,1,3,-3,7}; //3,-3,7,1,-1,2,-2
+		int k=4;
+		List<Integer> first=new ArrayList<Integer>();
+		List<Integer> last=new ArrayList<Integer>();
+		for(int i=0;i<k;i++) {
+			first.add(arr[i]);
+			System.out.println(arr[i]);
+		}
+		for(int i=k;i<arr.length;i++) {
+			last.add(arr[i]);
+			System.out.println(arr[i]);
+		}
+		System.out.print(last+" ");
+		System.out.print(first+" ");
+	}
+	
 public static void main(String[] args) {
 	
 //	createArray();
@@ -207,7 +225,7 @@ public static void main(String[] args) {
 //	maxCountFreq();
 //	moveZero();
 //	moveNegetive();
-	
+	rotate();
 	
 }
 }
