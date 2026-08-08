@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Library — All Books</title>
+    <style>
+        :root {
+            --ink: #2b2620;
+            --paper: #faf7f0;
+            --accent: #6b5a3e;
+            --line: #ddd4c0;
+            --danger: #a13d3d;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: var(--paper);
+            color: var(--ink);
+            margin: 0;
+            padding: 2rem 3rem;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 2px solid var(--ink);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        h1 {
+            font-size: 1.8rem;
+            letter-spacing: 0.03em;
+            margin: 0;
+        }
+        .subtitle {
+            font-family: Arial, sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+        }
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-family: Arial, sans-serif;
+        }
+        .toolbar form {
+            display: flex;
+            gap: 0.5rem;
+        }
+        input[type="text"] {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--line);
+            background: white;
+            font-family: Arial, sans-serif;
+            font-size: 0.9rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--ink);
+            background: var(--ink);
+            color: var(--paper);
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--ink);
+        }
+        .btn-danger {
+            border-color: var(--danger);
+            background: var(--danger);
+            color: white;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: Arial, sans-serif;
+            font-size: 0.9rem;
+        }
+        th {
+            text-align: left;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            border-bottom: 1px solid var(--ink);
+            padding: 0.6rem 0.5rem;
+        }
+        td {
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid var(--line);
+        }
+        tr:hover td {
+            background: #f1ecdf;
+        }
+        .empty {
+            padding: 3rem 0;
+            text-align: center;
+            color: var(--accent);
+            font-family: Arial, sans-serif;
+        }
+        .actions a {
+            margin-right: 0.75rem;
+            font-size: 0.85rem;
+            text-decoration: none;
+            color: var(--accent);
+        }
+        .actions a.delete { color: var(--danger); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>The Reading Room</h1>
+        <div class="subtitle">Library Catalog</div>
+    </div>
+</header>
+
+<div class="toolbar">
+    <form th:action="@{/book/search}" method="get">
+        <input type="text" name="keyword" placeholder="Search by title..." />
+        <button type="submit" class="btn btn-outline">Search</button>
+    </form>
+    <a th:href="@{/book/new}" class="btn" sec:authorize="hasAnyRole('ADMIN','LIBRARIAN')">+ Add Book</a>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>ISBN</th>
+            <th>Category</th>
+            <th>Available</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="book : ${books}">
+            <td th:text="${book.title}">Title</td>
+            <td th:text="${book.author}">Author</td>
+            <td th:text="${book.isbn}">ISBN</td>
+            <td th:text="${book.category}">Category</td>
+            <td th:text="${book.availableCopies} + ' / ' + ${book.totalCopies}">0 / 0</td>
+            <td class="actions">
+                <a th:href="@{/book/edit/{id}(id=${book.id})}" sec:authorize="hasAnyRole('ADMIN','LIBRARIAN')">Edit</a>
+				<a th:href="@{/book/delete/{id}(id=${book.id})}" class="delete" onclick="return confirm('Delete this book?');" 
+				sec:authorize="hasRole('ADMIN')">Delete</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="empty" th:if="${#lists.isEmpty(books)}">
+    No books in the catalog yet. Add your first one above.
+</div>
+
+<form th:action="@{/logout}" method="post">
+    <button type="submit" class="btn">Logout</button>
+</form>
+
+</body>
+</html>

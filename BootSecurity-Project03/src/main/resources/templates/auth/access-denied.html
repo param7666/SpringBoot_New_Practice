@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Access Denied — The Reading Room</title>
+    <style>
+        :root {
+            --ink: #2b2620;
+            --paper: #faf7f0;
+            --accent: #6b5a3e;
+            --line: #ddd4c0;
+            --danger: #a13d3d;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: var(--paper);
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            width: 420px;
+            padding: 2.5rem;
+            background: white;
+            border: 1px solid var(--danger);
+            text-align: center;
+        }
+        .code {
+            font-family: Arial, sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--danger);
+            margin-bottom: 0.5rem;
+        }
+        h1 {
+            font-size: 1.6rem;
+            margin: 0 0 1rem;
+        }
+        p {
+            font-family: Arial, sans-serif;
+            font-size: 0.9rem;
+            color: var(--accent);
+            margin-bottom: 2rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.6rem 1.4rem;
+            border: 1px solid var(--ink);
+            background: var(--ink);
+            color: var(--paper);
+            text-decoration: none;
+            font-family: Arial, sans-serif;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="code">403 · Forbidden</div>
+    <h1>You don't have access to this</h1>
+    <p>Your account doesn't have permission to perform this action. If you think this is a mistake, contact your library administrator.</p>
+    <a th:href="@{/book}" class="btn">Back to Catalog</a>
+</div>
+
+</body>
+</html>
