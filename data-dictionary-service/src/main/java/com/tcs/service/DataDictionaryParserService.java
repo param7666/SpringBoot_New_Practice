@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -27,47 +29,66 @@ public class DataDictionaryParserService {
 
 	private final ObjectMapper objectMapper=new ObjectMapper();
 	
-	public DataDictionarySchema parse(MultipartFile file) throws IOException, CsvException {
-		System.out.println("DataDictionaryParserService.parse()");
-		String fileName=Objects.requireNonNull(file.getOriginalFilename()).toLowerCase();
-		System.out.println("File name :: "+fileName);
-		
-		if(fileName.endsWith(".csv")) {
-			return parseCsv(file);
-		} else if(fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
-			return parseExcel(file);
-		} else if (fileName.endsWith(".json")) {
-			return parseJson(file);
-		} else {
-			throw new IllegalArgumentException("Invalid file");
-		}
-	}
+//	public DataDictionarySchema parse(MultipartFile file) throws IOException, CsvException {
+//		System.out.println("DataDictionaryParserService.parse()");
+//		String fileName=Objects.requireNonNull(file.getOriginalFilename()).toLowerCase();
+//		System.out.println("File name :: "+fileName);
+//		
+//		if(fileName.endsWith(".csv")) {
+//			return parseCsv(file);
+//		} else if(fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
+//			return parseExcel(file);
+//		} else if (fileName.endsWith(".json")) {
+//			return parseJson(file);
+//		} else {
+//			throw new IllegalArgumentException("Invalid file");
+//		}
+//	}
 	
-	private DataDictionarySchema parseCsv(MultipartFile file) throws IOException, CsvException{
-		
-		DataDictionarySchema schema=new DataDictionarySchema();
-		try(CSVReader reader=new CSVReader(new InputStreamReader(file.getInputStream()))) {
-			List<String[]> rows=reader.readAll();
-			if(rows.isEmpty()) return schema;
-			
-			for(int i=1;i<rows.size();i++) {
-				String[] row=rows.get(i);
-				if(row.length< 3) continue;
-				String tableName=row[0].trim();
-				String fieldName=row[1].trim();
-				String dataTypes=row[2].trim();
-				List<String> constraints = row.length>3 && !row[3].isBlank()?
-						List.of(row[2].split("\\s*,\\s*")):
-							new ArrayList<String>();
-				
-				addField(schema,tableName,fieldName,dataTypes,constraints);
-			}
-		} catch(Exception e) {
-			throw new IOException("Failed to parse CSV data dictionary: " + e.getMessage(), e);
-		}
-		 printParsedSchema(schema);
-		return schema;
-	}
+	public String parse(MultipartFile file) throws IOException {
+        String fileName = Objects.requireNonNull(file.getOriginalFilename()).toLowerCase();
+        String rawText;
+ 
+        if (fileName.endsWith(".csv")) {
+            rawText = parseCsv(file);
+        } else if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
+            rawText = parseAllSheets(file);
+        } else if (fileName.endsWith(".json")) {
+            rawText = parseJson(file);
+        } else {
+            throw new IllegalArgumentException("Unsupported data dictionary format: " + fileName
+                    + ". Supported: .csv, .xlsx, .json");
+        }
+ 
+        printParsedText(rawText); // DEBUG: remove/disable once confirmed working
+        return rawText;
+    }
+	
+//	private DataDictionarySchema parseCsv(MultipartFile file) throws IOException, CsvException{
+//		
+//		DataDictionarySchema schema=new DataDictionarySchema();
+//		try(CSVReader reader=new CSVReader(new InputStreamReader(file.getInputStream()))) {
+//			List<String[]> rows=reader.readAll();
+//			if(rows.isEmpty()) return schema;
+//			
+//			for(int i=1;i<rows.size();i++) {
+//				String[] row=rows.get(i);
+//				if(row.length< 3) continue;
+//				String tableName=row[0].trim();
+//				String fieldName=row[1].trim();
+//				String dataTypes=row[2].trim();
+//				List<String> constraints = row.length>3 && !row[3].isBlank()?
+//						List.of(row[2].split("\\s*,\\s*")):
+//							new ArrayList<String>();
+//				
+//				addField(schema,tableName,fieldName,dataTypes,constraints);
+//			}
+//		} catch(Exception e) {
+//			throw new IOException("Failed to parse CSV data dictionary: " + e.getMessage(), e);
+//		}
+//		 printParsedSchema(schema);
+//		return schema;
+//	}
 	
 
 
@@ -102,17 +123,17 @@ public class DataDictionaryParserService {
 		
 	}
 	
-	private DataDictionarySchema parseJson(MultipartFile file) throws IOException{
-		try(InputStream is=file.getInputStream()) {
-			JsonNode root=objectMapper.readTree(is);
-			if(root.has("tables")) {
-				return objectMapper.treeToValue(root, DataDictionarySchema.class);
-			}
-			throw new IllegalArgumentException("JSON data dictionary must contain a top-level 'tables' array");
-		} catch(Exception e) {
-			 throw new IOException("Failed to parse JSON data dictionary: " + e.getMessage(), e);
-		}
-	}
+//	private DataDictionarySchema parseJson(MultipartFile file) throws IOException{
+//		try(InputStream is=file.getInputStream()) {
+//			JsonNode root=objectMapper.readTree(is);
+//			if(root.has("tables")) {
+//				return objectMapper.treeToValue(root, DataDictionarySchema.class);
+//			}
+//			throw new IllegalArgumentException("JSON data dictionary must contain a top-level 'tables' array");
+//		} catch(Exception e) {
+//			 throw new IOException("Failed to parse JSON data dictionary: " + e.getMessage(), e);
+//		}
+//	}
 	
 	private void addField(DataDictionarySchema schema, String tableName, String fieldName, String dataTypes,
 			List<String> constraints) {
@@ -146,5 +167,68 @@ public class DataDictionaryParserService {
             }
         }
         System.out.println("==============================================");
+    }
+    
+    
+    private String parseAllSheets(MultipartFile file) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        DataFormatter formatter = new DataFormatter(); // safely stringifies any cell type
+ 
+        try (InputStream is = file.getInputStream(); Workbook workbook = WorkbookFactory.create(is)) {
+            int sheetCount = workbook.getNumberOfSheets();
+ 
+            for (int s = 0; s < sheetCount; s++) {
+                Sheet sheet = workbook.getSheetAt(s);
+                sb.append("--- SHEET: ").append(sheet.getSheetName()).append(" ---\n");
+ 
+                for (Row row : sheet) {
+                    StringBuilder rowText = new StringBuilder();
+                    boolean rowHasContent = false;
+ 
+                    for (Cell cell : row) {
+                        String value = formatter.formatCellValue(cell).trim();
+                        if (!value.isEmpty()) rowHasContent = true;
+                        rowText.append(value).append(" | ");
+                    }
+ 
+                    if (rowHasContent) {
+                        sb.append(rowText).append("\n");
+                    }
+                }
+                sb.append("\n");
+            }
+        } catch (Exception e) {
+            throw new IOException("Failed to parse Excel data dictionary: " + e.getMessage(), e);
+        }
+        return sb.toString();
+    }
+    
+    
+    private String parseCsv(MultipartFile file) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        try (CSVReader reader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
+            List<String[]> rows = reader.readAll();
+            for (String[] row : rows) {
+                sb.append(String.join(" | ", row)).append("\n");
+            }
+        } catch (Exception e) {
+            throw new IOException("Failed to parse CSV data dictionary: " + e.getMessage(), e);
+        }
+        return sb.toString();
+    }
+    
+    private String parseJson(MultipartFile file) throws IOException {
+        try (InputStream is = file.getInputStream()) {
+            return new String(is.readAllBytes());
+        } catch (Exception e) {
+            throw new IOException("Failed to parse JSON data dictionary: " + e.getMessage(), e);
+        }
+    }
+ 
+    // ---------------------------------------------------------------
+    private void printParsedText(String text) {
+        System.out.println("========== PARSED DATA DICTIONARY (ALL SHEETS) ==========");
+        System.out.println(text);
+        System.out.println("===========================================================");
     }
 }

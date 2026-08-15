@@ -32,6 +32,8 @@ public class DataDictionaryController {
 	         @RequestParam(value = "extraDetails", required = false) String extraDetails,
 	         @RequestParam(value = "projectId", required = false) String projectId) {
 		
+		System.out.println("DataDictionaryController.generate()");
+		
 		 GenerationRequest request = new GenerationRequest();
 	     request.setDataDictionaryFile(dataDictionaryFile);
 	     request.setWireframeFile(wireframeFile);
