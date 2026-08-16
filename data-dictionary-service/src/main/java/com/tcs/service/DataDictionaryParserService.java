@@ -29,21 +29,7 @@ public class DataDictionaryParserService {
 
 	private final ObjectMapper objectMapper=new ObjectMapper();
 	
-//	public DataDictionarySchema parse(MultipartFile file) throws IOException, CsvException {
-//		System.out.println("DataDictionaryParserService.parse()");
-//		String fileName=Objects.requireNonNull(file.getOriginalFilename()).toLowerCase();
-//		System.out.println("File name :: "+fileName);
-//		
-//		if(fileName.endsWith(".csv")) {
-//			return parseCsv(file);
-//		} else if(fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
-//			return parseExcel(file);
-//		} else if (fileName.endsWith(".json")) {
-//			return parseJson(file);
-//		} else {
-//			throw new IllegalArgumentException("Invalid file");
-//		}
-//	}
+
 	
 	public String parse(MultipartFile file) throws IOException {
         String fileName = Objects.requireNonNull(file.getOriginalFilename()).toLowerCase();
@@ -63,32 +49,6 @@ public class DataDictionaryParserService {
         printParsedText(rawText); // DEBUG: remove/disable once confirmed working
         return rawText;
     }
-	
-//	private DataDictionarySchema parseCsv(MultipartFile file) throws IOException, CsvException{
-//		
-//		DataDictionarySchema schema=new DataDictionarySchema();
-//		try(CSVReader reader=new CSVReader(new InputStreamReader(file.getInputStream()))) {
-//			List<String[]> rows=reader.readAll();
-//			if(rows.isEmpty()) return schema;
-//			
-//			for(int i=1;i<rows.size();i++) {
-//				String[] row=rows.get(i);
-//				if(row.length< 3) continue;
-//				String tableName=row[0].trim();
-//				String fieldName=row[1].trim();
-//				String dataTypes=row[2].trim();
-//				List<String> constraints = row.length>3 && !row[3].isBlank()?
-//						List.of(row[2].split("\\s*,\\s*")):
-//							new ArrayList<String>();
-//				
-//				addField(schema,tableName,fieldName,dataTypes,constraints);
-//			}
-//		} catch(Exception e) {
-//			throw new IOException("Failed to parse CSV data dictionary: " + e.getMessage(), e);
-//		}
-//		 printParsedSchema(schema);
-//		return schema;
-//	}
 	
 
 
@@ -123,17 +83,7 @@ public class DataDictionaryParserService {
 		
 	}
 	
-//	private DataDictionarySchema parseJson(MultipartFile file) throws IOException{
-//		try(InputStream is=file.getInputStream()) {
-//			JsonNode root=objectMapper.readTree(is);
-//			if(root.has("tables")) {
-//				return objectMapper.treeToValue(root, DataDictionarySchema.class);
-//			}
-//			throw new IllegalArgumentException("JSON data dictionary must contain a top-level 'tables' array");
-//		} catch(Exception e) {
-//			 throw new IOException("Failed to parse JSON data dictionary: " + e.getMessage(), e);
-//		}
-//	}
+
 	
 	private void addField(DataDictionarySchema schema, String tableName, String fieldName, String dataTypes,
 			List<String> constraints) {

@@ -2,51 +2,58 @@ package com.tcs.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.tcs.dto.GenerationRequest;
-import com.tcs.dto.GenerationResponse;
-import com.tcs.service.DataDictionaryOrchestrationService;
+import com.tcs.dto.FrontendFormRequest;
+import com.tcs.dto.GenerationAcceptedResponse;
+import com.tcs.dto.GenerationStatusResponse;
+import com.tcs.service.GenerationIntakeService;
+import com.tcs.service.GenerationStatusService;
 
 import lombok.RequiredArgsConstructor;
 
-@CrossOrigin(origins = "*")
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/data-dictionary")
+@CrossOrigin(origins = "*") // relax for local testing only — restrict before production
 @RequiredArgsConstructor
 public class DataDictionaryController {
 
-	private final DataDictionaryOrchestrationService service;
-	
-	
-	@PostMapping(value = "/generate", consumes = "multipart/form-data")
-	public ResponseEntity<?> generate(
-			 @RequestParam("dataDictionaryFile") MultipartFile dataDictionaryFile,
-	         @RequestParam(value = "wireframeFile", required = false) MultipartFile wireframeFile,
-	         @RequestParam("techStack") String techStack,
-	         @RequestParam(value = "extraDetails", required = false) String extraDetails,
-	         @RequestParam(value = "projectId", required = false) String projectId) {
-		
-		System.out.println("DataDictionaryController.generate()");
-		
-		 GenerationRequest request = new GenerationRequest();
-	     request.setDataDictionaryFile(dataDictionaryFile);
-	     request.setWireframeFile(wireframeFile);
-	     request.setTechStack(techStack);
-	     request.setExtraDetails(extraDetails);
-	     request.setProjectId(projectId);
-	     
-	     GenerationResponse response = service.process(request);
-	     HttpStatus status = "FAILED".equals(response.getStatus())
-	                ? HttpStatus.BAD_REQUEST
-	                : HttpStatus.OK;
-	 
-	        return ResponseEntity.status(status).body(response);
-	}
-	
+    private final GenerationIntakeService generationIntakeService;
+    private final GenerationStatusService generationStatusService;
+
+
+
+    /**
+     * Kicks off generation and returns immediately (HTTP 202) with a
+     * generationId. Does NOT wait for the AI response.
+     *
+     * frontendDetails is sent as a JSON part (Content-Type: application/json
+     * on that part) within the multipart/form-data request.
+     */
+    @PostMapping(value = "/generate", consumes = "multipart/form-data")
+    public ResponseEntity<GenerationAcceptedResponse> generate(
+            @RequestParam("dataDictionaryFile") MultipartFile dataDictionaryFile,
+            @RequestParam(value = "wireframeFile", required = false) MultipartFile wireframeFile,
+            @RequestParam("techStack") String techStack,
+            @RequestParam(value = "projectId", required = false) String projectId,
+            @RequestPart(value = "frontendDetails", required = false) FrontendFormRequest frontendDetails
+    ) throws Exception {
+        GenerationAcceptedResponse response = generationIntakeService.startGeneration(
+                dataDictionaryFile, wireframeFile, techStack, projectId, frontendDetails);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+
+    /**
+     * Poll this to check job status. Once status is COMPLETED, "result"
+     * contains the structured JSON returned by Django (entities, apis,
+     * services, roles, frontend, config — ready to feed into templates).
+     */
+    @GetMapping("/generations/{generationId}")
+    public ResponseEntity<GenerationStatusResponse> getStatus(@PathVariable UUID generationId) throws Exception {
+        return ResponseEntity.ok(generationStatusService.getStatus(generationId));
+    }
 }
