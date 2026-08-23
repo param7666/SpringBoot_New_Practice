@@ -9,11 +9,13 @@ import com.tcs.dto.UserResponse;
 import com.tcs.entity.User;
 import com.tcs.repository.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+
 import java.security.SecureRandom;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
@@ -25,25 +27,16 @@ public class UserService {
             "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    public UserService(
-            UserRepository userRepository,
-            PasswordEncoder passwordEncoder,
-            ProjectService projectService,
-            TokenBlacklistService tokenBlacklistService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.projectService = projectService;
-        this.tokenBlacklistService = tokenBlacklistService;
-    }
 
-    public UserResponse getCurrentUserProfile(String username) {
-        User user = userRepository.findByUsername(username)
+
+    public UserResponse getCurrentUserProfile(String email) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return toDto(user);
+        return toResponse(user);
     }
 
-    public void changePassword(String username, ChangePasswordRequest request) {
-        User user = userRepository.findByUsername(username)
+    public void changePassword(String email, ChangePasswordRequest request) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
@@ -54,20 +47,19 @@ public class UserService {
         userRepository.save(user);
     }
 
-//    public String forgotPassword(ForgotPasswordRequest request) {
-//        User user = userRepository.findByEmail(request.getEmail())
-//                .orElseThrow(() -> new RuntimeException("No account found with this email"));
-//
-//        String tempPassword = generateTempPassword();
-//        user.setPassword(passwordEncoder.encode(tempPassword));
-//        userRepository.save(user);
-//
-//        // TODO: send tempPassword via email instead of returning it directly once a mail service is added.
-//        return tempPassword;
-//    }
+    public String forgotPassword(ForgotPasswordRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("No account found with this email"));
 
-    public List<ProjectDto> getMyProjects(String username) {
-        User user = userRepository.findByUsername(username)
+        String tempPassword = generateTempPassword();
+        user.setPassword(passwordEncoder.encode(tempPassword));
+        userRepository.save(user);
+
+        return tempPassword;
+    }
+
+    public List<ProjectDto> getMyProjects(String email) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return projectService.getProjectsByUserId(user.getId());
     }
@@ -84,10 +76,10 @@ public class UserService {
         return sb.toString();
     }
 
-    private UserResponse toDto(User user) {
+    private UserResponse toResponse(User user) {
         return new UserResponse(
                 user.getId(),
-                user.getUsername(),
+                user.getFullName(),
                 user.getEmail(),
                 user.getRole().name(),
                 user.isActive()

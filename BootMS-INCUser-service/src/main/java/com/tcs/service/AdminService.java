@@ -49,12 +49,12 @@ public class AdminService {
     }
 
     private UserResponse toResponse(User user) {
-        return new UserResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getRole().name(),
-                user.isActive()
-        );
+    	 return new UserResponse(
+    	            user.getId(),
+    	            user.getFullName(),
+    	            user.getEmail(),
+    	            user.getRole().name(),
+    	            user.isActive()
+    	    );
     }
 }

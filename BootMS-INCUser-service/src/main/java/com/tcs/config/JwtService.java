@@ -30,15 +30,13 @@ public class JwtService {
     }
 
     public String generateToken(User user) {
-
         return Jwts.builder()
-                .subject(user.getUsername())
+                .subject(user.getEmail())
                 .claim("role", user.getRole().name())
                 .claim("userId", user.getId())
+                .claim("fullName", user.getFullName())
                 .issuedAt(new Date())
-                .expiration(
-                        new Date(System.currentTimeMillis() + expiration)
-                )
+                .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey())
                 .compact();
     }

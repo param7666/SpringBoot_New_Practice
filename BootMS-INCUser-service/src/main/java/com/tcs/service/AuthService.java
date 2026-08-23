@@ -36,58 +36,45 @@ public class AuthService {
     }
 
     public AuthResponse register(RegisterRequest request) {
-
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists");
-        }
-
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
 
         User user = new User();
-
-        user.setUsername(request.getUsername());
+        user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
-
-        // NEVER store plain password
-        user.setPassword(
-                passwordEncoder.encode(request.getPassword())
-        );
-
-        // Public registration can only create USER
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.USER);
 
         User savedUser = userRepository.save(user);
-
         String token = jwtService.generateToken(savedUser);
 
         return new AuthResponse(
                 token,
-                savedUser.getUsername(),
+                savedUser.getFullName(),
+                savedUser.getEmail(),
                 savedUser.getRole().name()
         );
     }
 
     public AuthResponse login(LoginRequest request) {
-
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
+                        request.getEmail(),
                         request.getPassword()
                 )
         );
 
         User user = userRepository
-                .findByUsername(request.getUsername())
-                .orElseThrow(() ->
-                        new RuntimeException("User not found"));
+                .findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         String token = jwtService.generateToken(user);
 
         return new AuthResponse(
                 token,
-                user.getUsername(),
+                user.getFullName(),
+                user.getEmail(),
                 user.getRole().name()
         );
     }

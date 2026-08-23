@@ -8,18 +8,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "users105")
+@Table(name = "users108")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String username;
+    @Column(nullable = false)
+    private String fullName;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -33,4 +34,5 @@ public class User {
 
     @Column(nullable = false)
     private boolean active = true;
+
 }
