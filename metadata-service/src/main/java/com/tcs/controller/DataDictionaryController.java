@@ -2,6 +2,7 @@
 
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,6 +11,9 @@ import com.tcs.dto.GenerationAcceptedResponse;
 import com.tcs.dto.GenerationStatusResponse;
 import com.tcs.service.GenerationIntakeService;
 import com.tcs.service.GenerationStatusService;
+import com.tcs.service.ProjectGenerationService;
+import org.springframework.http.HttpHeaders;
+
 import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
@@ -28,6 +32,7 @@ public class DataDictionaryController {
 
     private final GenerationIntakeService generationIntakeService;
     private final GenerationStatusService generationStatusService;
+    private final ProjectGenerationService projectGenerationService;
 
     @PostMapping(value = "/generate", consumes = "multipart/form-data")
     public ResponseEntity<GenerationAcceptedResponse> generate(
@@ -51,5 +56,20 @@ public class DataDictionaryController {
     ) {
         boolean isAdmin = "ADMIN".equalsIgnoreCase(role);
         return ResponseEntity.ok(generationStatusService.getStatus(generationId, userId, isAdmin));
+    }
+    
+    @GetMapping("/generations/{generationId}/download-project")
+    public ResponseEntity<byte[]> downloadProject(
+            @PathVariable UUID generationId,
+            @RequestHeader("X-Auth-UserId") Long userId,
+            @RequestHeader(value = "X-Auth-Role", required = false) String role
+    ) throws Exception {
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(role);
+        byte[] zipBytes = projectGenerationService.getOrBuildProjectZip(generationId, userId, isAdmin);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"project.zip\"")
+                .body(zipBytes);
     }
 }

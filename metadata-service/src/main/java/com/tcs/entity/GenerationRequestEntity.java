@@ -1,21 +1,13 @@
 package com.tcs.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.Instant;
 import java.util.UUID;
 import com.tcs.enums.GenerationStatus;
 
-/**
- * One row per generation request. Owned by a user in the separate
- * User/Auth service — since this is a different microservice with its
- * own database, we store just the userId (from the JWT / gateway header),
- * NOT a JPA relation to a User entity. There is no shared database to join
- * across services.
- */
 @Entity
-@Table(name = "generation_requests1")
+@Table(name = "generation_requests")
 @Data
 public class GenerationRequestEntity {
 
@@ -23,9 +15,6 @@ public class GenerationRequestEntity {
     @GeneratedValue
     private UUID id;
 
-    // Owning user's id, taken from the JWT (X-Auth-UserId header, forwarded
-    // by the gateway). Used for ownership checks — a user can only see
-    // their own generation jobs unless they're an admin.
     @Column(nullable = false)
     private Long userId;
 
@@ -34,25 +23,25 @@ public class GenerationRequestEntity {
     @Column(nullable = false)
     private String techStack;
 
-    // Raw multi-sheet text dump from DataDictionaryParserService — sent to Django as-is.
     @Column(columnDefinition = "TEXT")
     private String dictionaryText;
 
-    // Path to the wireframe file on disk, if one was uploaded. Null if none.
     private String wireframePath;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private GenerationStatus status;
 
-    // Full raw JSON response returned by Django once generation succeeds.
     @Column(columnDefinition = "TEXT")
     private String resultJson;
 
-    // Just the "updatedDictionary" portion of Django's response, extracted
-    // for downstream steps that only need the refined dictionary.
     @Column(columnDefinition = "TEXT")
     private String updatedDictionaryText;
+
+    // Id from the Project Generator service, once the project has been
+    // built and its zip stored there. Used to re-download without
+    // rebuilding the project every time.
+    private UUID projectGeneratorId;
 
     @Column(columnDefinition = "TEXT")
     private String errorMessage;
