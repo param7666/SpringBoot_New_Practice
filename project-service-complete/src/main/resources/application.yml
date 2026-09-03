@@ -1,0 +1,48 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: project-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ai_project_generator
+    username: postgres
+    password: postgres
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
+
+services:
+  metadata:
+    base-url: http://localhost:8484
+    extract-path: /api/metadata/extract
+  python:
+    base-url: http://localhost:8000
+    generate-path: /api/generate
+
+storage:
+  upload-dir: ./storage/uploads
+
+generation:
+  executor:
+    core-pool-size: 4
+    max-pool-size: 8
+    queue-capacity: 50
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

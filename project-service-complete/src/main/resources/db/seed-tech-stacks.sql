@@ -1,0 +1,3 @@
+-- Optional sample data.
+-- Replace IDs with your own UUIDs if your existing database already has tech_stacks.
+-- The application does not require this file to run.
