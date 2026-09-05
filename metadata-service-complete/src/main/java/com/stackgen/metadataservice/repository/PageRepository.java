@@ -1,0 +1,1 @@
+package com.stackgen.metadataservice.repository; import com.stackgen.metadataservice.entity.Page; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface PageRepository extends JpaRepository<Page,UUID>{ List<Page> findByProjectIdOrderByName(UUID projectId); void deleteByProjectId(UUID projectId); }

@@ -1,0 +1,1 @@
+package com.stackgen.metadataservice.dto; import java.util.*; public record MetadataResponse(UUID projectId,List<EntityMetadataResponse> entities,List<RelationshipResponse> relationships,List<ApiEndpointResponse> apiEndpoints,Map<String,Object> frontend){ }

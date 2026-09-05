@@ -1,0 +1,3 @@
+package com.stackgen.metadataservice.entity;
+import jakarta.persistence.*; import java.util.UUID;
+@Entity @Table(name="generated_files") public class GeneratedFile { @Id @GeneratedValue(strategy=GenerationType.UUID) private UUID id; @Column(name="project_id",nullable=false) private UUID projectId; @Column(name="file_name",nullable=false,length=255) private String fileName; @Column(name="file_path",nullable=false,length=500) private String filePath; public UUID getId(){return id;} public UUID getProjectId(){return projectId;} public void setProjectId(UUID v){projectId=v;} public String getFileName(){return fileName;} public void setFileName(String v){fileName=v;} public String getFilePath(){return filePath;} public void setFilePath(String v){filePath=v;} }

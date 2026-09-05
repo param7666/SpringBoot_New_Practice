@@ -1,0 +1,1 @@
+package com.stackgen.metadataservice.repository; import com.stackgen.metadataservice.entity.EndpointPathVariable; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface EndpointPathVariableRepository extends JpaRepository<EndpointPathVariable,UUID>{ void deleteByEndpointIdIn(Collection<UUID> ids); }

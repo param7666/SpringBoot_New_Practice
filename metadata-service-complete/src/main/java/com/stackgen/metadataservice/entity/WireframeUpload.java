@@ -1,0 +1,5 @@
+package com.stackgen.metadataservice.entity;
+import jakarta.persistence.*; import java.util.UUID;
+@Entity @Table(name="wireframe_uploads")
+public class WireframeUpload { @Id @GeneratedValue(strategy=GenerationType.UUID) private UUID id; @Column(name="page_id",nullable=false) private UUID pageId; @Column(name="file_path",nullable=false,length=500) private String filePath; @Column(name="extraction_status",nullable=false,length=20) private String extractionStatus="pending"; @Column(name="raw_extraction_json",columnDefinition="text") private String rawExtractionJson; public UUID getId(){return id;} public UUID getPageId(){return pageId;} public void setPageId(UUID v){pageId=v;} public String getFilePath(){return filePath;} public void setFilePath(String v){filePath=v;} public String getExtractionStatus(){return extractionStatus;} public void setExtractionStatus(String v){extractionStatus=v;} public String getRawExtractionJson(){return rawExtractionJson;} public void setRawExtractionJson(String v){rawExtractionJson=v;}
+}

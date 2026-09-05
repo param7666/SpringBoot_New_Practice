@@ -1,0 +1,1 @@
+package com.stackgen.metadataservice.dto; public record RelationshipResponse(String sourceTable,String sourceColumn,String targetTable,String targetColumn,String relationshipType,String joinColumn,String mappedBy,boolean owningSide){ }

@@ -1,0 +1,1 @@
+package com.stackgen.metadataservice.repository; import com.stackgen.metadataservice.entity.WireframeUpload; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface WireframeUploadRepository extends JpaRepository<WireframeUpload,UUID>{ List<WireframeUpload> findByPageId(UUID pageId); }

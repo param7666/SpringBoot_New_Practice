@@ -1,0 +1,1 @@
+package com.stackgen.metadataservice.repository; import com.stackgen.metadataservice.entity.ComponentEvent; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface ComponentEventRepository extends JpaRepository<ComponentEvent,UUID>{ void deleteByComponentIdIn(Collection<UUID> ids); }

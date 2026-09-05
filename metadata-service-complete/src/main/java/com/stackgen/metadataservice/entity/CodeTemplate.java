@@ -1,0 +1,3 @@
+package com.stackgen.metadataservice.entity;
+import jakarta.persistence.*; import java.util.UUID;
+@Entity @Table(name="code_templates") public class CodeTemplate { @Id @GeneratedValue(strategy=GenerationType.UUID) private UUID id; @Column(name="stack_id",nullable=false) private UUID stackId; @Column(nullable=false,length=100) private String name; @Column(columnDefinition="text") private String template; public UUID getId(){return id;} public UUID getStackId(){return stackId;} public void setStackId(UUID v){stackId=v;} public String getName(){return name;} public void setName(String v){name=v;} public String getTemplate(){return template;} public void setTemplate(String v){template=v;} }

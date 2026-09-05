@@ -1,0 +1,1 @@
+package com.stackgen.metadataservice.dto; public record ApiEndpointResponse(String path,String httpMethod,String operationName,String requestDto,String responseDto,boolean requiresAuth,String description){ }

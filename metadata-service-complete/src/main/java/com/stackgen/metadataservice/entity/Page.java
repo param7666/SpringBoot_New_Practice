@@ -1,0 +1,6 @@
+package com.stackgen.metadataservice.entity;
+import jakarta.persistence.*; import java.time.Instant; import java.util.UUID;
+@Entity @Table(name="pages")
+public class Page { @Id @GeneratedValue(strategy=GenerationType.UUID) private UUID id; @Column(name="project_id",nullable=false) private UUID projectId; @Column(name="entity_id") private UUID entityId; @Column(nullable=false,length=100) private String name; @Column(nullable=false,length=255) private String route; @Column(name="page_type",nullable=false,length=30) private String pageType; @Column(name="show_in_nav",nullable=false) private boolean showInNav; @Column(name="created_at",nullable=false) private Instant createdAt=Instant.now();
+ public UUID getId(){return id;} public UUID getProjectId(){return projectId;} public void setProjectId(UUID v){projectId=v;} public UUID getEntityId(){return entityId;} public void setEntityId(UUID v){entityId=v;} public String getName(){return name;} public void setName(String v){name=v;} public String getRoute(){return route;} public void setRoute(String v){route=v;} public String getPageType(){return pageType;} public void setPageType(String v){pageType=v;} public boolean isShowInNav(){return showInNav;} public void setShowInNav(boolean v){showInNav=v;} public Instant getCreatedAt(){return createdAt;}
+}

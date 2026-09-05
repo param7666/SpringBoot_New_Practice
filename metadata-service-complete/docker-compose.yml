@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: stackgen-metadata-postgres
+    environment:
+      POSTGRES_DB: ai_project_generator
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - metadata_pgdata:/var/lib/postgresql/data
+volumes:
+  metadata_pgdata:

@@ -1,0 +1,1 @@
+package com.stackgen.metadataservice.dto; public record FieldMetadataResponse(String name,String dataType,boolean nullable,boolean unique,boolean primaryKey,String defaultValue,String validations,int displayOrder){ }
