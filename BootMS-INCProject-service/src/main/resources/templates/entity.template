@@ -1,0 +1,12 @@
+package {{PACKAGE_NAME}}.entity;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+@Entity
+@Table(name = "{{TABLE_NAME}}")
+@Data
+public class {{ENTITY_NAME}} {
+
+{{FIELDS}}
+}

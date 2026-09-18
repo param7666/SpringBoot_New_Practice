@@ -1,0 +1,28 @@
+package {{PACKAGE_NAME}}.controller;
+
+import {{PACKAGE_NAME}}.entity.{{ENTITY_NAME}};
+import {{PACKAGE_NAME}}.service.{{ENTITY_NAME}}Service;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/{{TABLE_NAME}}")
+public class {{ENTITY_NAME}}Controller {
+
+    private final {{ENTITY_NAME}}Service {{ENTITY_NAME_LOWER}}Service;
+
+    public {{ENTITY_NAME}}Controller({{ENTITY_NAME}}Service {{ENTITY_NAME_LOWER}}Service) {
+        this.{{ENTITY_NAME_LOWER}}Service = {{ENTITY_NAME_LOWER}}Service;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<{{ENTITY_NAME}}>> getAll() {
+        return ResponseEntity.ok({{ENTITY_NAME_LOWER}}Service.getAll());
+    }
+
+    @PostMapping
+    public ResponseEntity<{{ENTITY_NAME}}> create(@RequestBody {{ENTITY_NAME}} entity) {
+        return ResponseEntity.ok({{ENTITY_NAME_LOWER}}Service.create(entity));
+    }
+}

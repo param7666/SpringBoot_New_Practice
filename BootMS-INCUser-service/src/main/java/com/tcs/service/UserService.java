@@ -28,7 +28,6 @@ public class UserService {
     private static final SecureRandom RANDOM = new SecureRandom();
 
 
-
     public UserResponse getCurrentUserProfile(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));

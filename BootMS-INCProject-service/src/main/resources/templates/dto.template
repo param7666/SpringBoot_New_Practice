@@ -1,0 +1,9 @@
+package {{PACKAGE_NAME}}.dto;
+
+import lombok.Data;
+
+@Data
+public class {{ENTITY_NAME}}Dto {
+
+{{FIELDS}}
+}

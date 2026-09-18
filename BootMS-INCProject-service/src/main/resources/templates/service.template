@@ -1,0 +1,24 @@
+package {{PACKAGE_NAME}}.service;
+
+import {{PACKAGE_NAME}}.entity.{{ENTITY_NAME}};
+import {{PACKAGE_NAME}}.repository.{{ENTITY_NAME}}Repository;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+@Service
+public class {{ENTITY_NAME}}Service {
+
+    private final {{ENTITY_NAME}}Repository {{ENTITY_NAME_LOWER}}Repository;
+
+    public {{ENTITY_NAME}}Service({{ENTITY_NAME}}Repository {{ENTITY_NAME_LOWER}}Repository) {
+        this.{{ENTITY_NAME_LOWER}}Repository = {{ENTITY_NAME_LOWER}}Repository;
+    }
+
+    public List<{{ENTITY_NAME}}> getAll() {
+        return {{ENTITY_NAME_LOWER}}Repository.findAll();
+    }
+
+    public {{ENTITY_NAME}} create({{ENTITY_NAME}} entity) {
+        return {{ENTITY_NAME_LOWER}}Repository.save(entity);
+    }
+}
